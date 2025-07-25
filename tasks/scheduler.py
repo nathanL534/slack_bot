@@ -3,7 +3,12 @@ from app.slack import send_message
 from datetime import datetime
 
 def run_trading_algo():
-    pass
+    message = (
+            f"📊 *Running trading algo Check*\n"
+            f" *Date:* {datetime.now()}\n"
+        )
+    send_message("#notifier", message)
+    
 
 def check_portfolio():
     try:
