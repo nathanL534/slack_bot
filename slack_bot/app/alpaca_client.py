@@ -19,7 +19,6 @@ def get_portfolio_status():
             "cash": account.cash,
             "portfolio_value": account.portfolio_value,
             "buying_power": account.buying_power,
-            "equity": account.equity,
             "status": account.status
         },
         "positions": [
