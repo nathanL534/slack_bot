@@ -25,4 +25,8 @@ urllib3==2.5.0
 websockets==15.0.1
 yfinance==0.2.65
 uvicorn
+fastapi
+httpx
+slack_sdk
+
 
