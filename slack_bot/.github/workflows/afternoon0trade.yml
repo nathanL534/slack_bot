@@ -1,0 +1,14 @@
+name: Afternoon Trade Algo
+
+on:
+  schedule:
+    - cron: '0 20 * * *'  # 3PM CDT
+  workflow_dispatch:
+
+jobs:
+  trigger_afternoon_trade:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger /run-afternoon-trade
+        run: |
+          curl -X GET https://your-app.onrender.com/run-afternoon-trade

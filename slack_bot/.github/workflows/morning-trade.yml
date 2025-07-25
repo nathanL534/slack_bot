@@ -1,0 +1,14 @@
+name: Morning Trade Algo
+
+on:
+  schedule:
+    - cron: '0 15 * * *'  # 10AM CDT (Render is in UTC)
+  workflow_dispatch:
+
+jobs:
+  trigger_morning_trade:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger /run-morning-trade
+        run: |
+          curl -X GET https://your-app.onrender.com/run-morning-trade
