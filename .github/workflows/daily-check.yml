@@ -2,7 +2,7 @@ name: Daily Portfolio Check
 
 on:
   schedule:
-    - cron: '*/1 * * * *'  # every minute
+    - cron: '0 */6 * * *'  # every minute
   workflow_dispatch:
 
 jobs:
