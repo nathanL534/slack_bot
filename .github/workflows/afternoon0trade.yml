@@ -11,4 +11,4 @@ jobs:
     steps:
       - name: Trigger /run-afternoon-trade
         run: |
-          curl -X GET https://your-app.onrender.com/run-afternoon-trade
+          curl -X GET https://slack-bot-xg1w.onrender.com/run-afternoon-trade
