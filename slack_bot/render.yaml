@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: slackbot-api
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "uvicorn app.main:app --host 0.0.0.0 --port 8000"
+
+  - type: background
+    name: slackbot-scheduler
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "sleep infinity"
+    cronJobs:
+      - name: run-morning-algo
+        schedule: "0 15 * * *"  # 10AM CDT
+        command: "python run_tasks.py morning_trade"
+
+      - name: run-afternoon-algo
+        schedule: "0 20 * * *"  # 3PM CDT
+        command: "python run_tasks.py afternoon_trade"
+
+      - name: daily-portfolio-check
+        schedule: "0 18 * * *"  # 1PM CDT
+        command: "python run_tasks.py daily_check"

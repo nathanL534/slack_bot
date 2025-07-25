@@ -17,9 +17,11 @@ def get_portfolio_status():
     return {
         "account": {
             "cash": account.cash,
+            "equity": account.equity,
             "portfolio_value": account.portfolio_value,
             "buying_power": account.buying_power,
             "status": account.status
+
         },
         "positions": [
             {

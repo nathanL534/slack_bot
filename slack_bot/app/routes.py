@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request, HTTPException
 from app.slack import send_message
-from app.stocks import get_weekly_average
+
 from app.alpaca_client import get_portfolio_status, get_7_day_average, buy_stock, sell_stock
 from app.fmp_client import get_tech_tickers
 import json 
