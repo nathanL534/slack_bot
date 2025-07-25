@@ -47,7 +47,6 @@ async def update_portfolio_status():
         message = (
             f"📊 *Portfolio Status*\n"
             f"> 💵 Cash: ${account['cash']}\n"
-            f"> 📈 Equity: ${account['equity']}\n"
             f"> 💼 Portfolio Value: ${account['portfolio_value']}\n"
             f"> 🛒 Buying Power: ${account['buying_power']}\n"
             f"> ✅ Status: {account['status']}"
