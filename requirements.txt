@@ -29,5 +29,7 @@ fastapi
 httpx
 slack_sdk
 alpaca-trade-api
+supabase
+pydantic
 
 
