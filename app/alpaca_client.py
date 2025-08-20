@@ -1,7 +1,24 @@
 import os
 from alpaca_trade_api.rest import REST
-from alpaca_trade_api.rest import TimeFrame
 from dotenv import load_dotenv
+
+# Try different import paths for TimeFrame (varies by alpaca-trade-api version)
+try:
+    from alpaca_trade_api.rest import TimeFrame
+except ImportError:
+    try:
+        from alpaca_trade_api import TimeFrame
+    except ImportError:
+        # Fallback: create a simple TimeFrame class if import fails
+        class TimeFrame:
+            Minute = "1Min"
+            Hour = "1Hour" 
+            Day = "1Day"
+            
+            @classmethod
+            def __call__(cls, amount, unit):
+                return f"{amount}{unit.capitalize()}"
+
 load_dotenv()
 API_KEY = os.getenv("APCA_API_KEY_ID")
 SECRET_KEY = os.getenv("APCA_API_SECRET_KEY")
@@ -115,7 +132,7 @@ if __name__ == "__main__":
     base_url=os.getenv("APCA_API_DATA_URL")
     )
     import os
-    from alpaca_trade_api.rest import REST, TimeFrame
+    from alpaca_trade_api.rest import REST
     from dotenv import load_dotenv
 
     load_dotenv()
