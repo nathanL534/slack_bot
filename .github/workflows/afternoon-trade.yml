@@ -2,7 +2,7 @@ name: Afternoon Trade Algo
 
 on:
   schedule:
-    - cron: '0 20 * * *'  # 3PM CDT
+    - cron: '0 20 * * 1-5'  # 3PM CDT, Monday-Friday only
   workflow_dispatch:
 
 jobs:

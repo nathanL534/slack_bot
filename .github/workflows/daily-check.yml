@@ -2,7 +2,8 @@ name: Daily Portfolio Check
 
 on:
   schedule:
-    - cron: '0 */6 * * *'  # every minute
+    - cron: '0 14 * * 1-5'  # 9AM CDT, Monday-Friday
+    - cron: '0 22 * * 1-5'  # 5PM CDT, Monday-Friday
   workflow_dispatch:
 
 jobs:

@@ -2,7 +2,7 @@ name: Morning Trade Algo
 
 on:
   schedule:
-    - cron: '0 15 * * *'  # 10AM CDT (Render is in UTC)
+    - cron: '0 15 * * 1-5'  # 10AM CDT, Monday-Friday only
   workflow_dispatch:
 
 jobs:
