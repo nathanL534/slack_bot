@@ -1,7 +1,7 @@
 from ticker_engine.queue import TickerQueue
 from ticker_engine.ticker import Ticker
 from ticker_engine.scorer import dummy_score
-from app.fmp_client import get_tech_tickers
+from app.finnhub_client import get_tech_tickers
 
 
 def main():

@@ -19,7 +19,7 @@ import heapq
 import requests
 
 from app import db
-from app.fmp_client import get_tech_tickers as get_tech_universe
+from app.finnhub_client import get_tech_tickers as get_tech_universe
 from ticker_engine.scorer import swing_score
 from ticker_engine.ticker import Ticker
 
@@ -28,7 +28,7 @@ ADD_THRESHOLD = 0.67
 DROP_THRESHOLD = 0.60
 QUEUE_MAX = 50
 TOP_N = 12
-SLEEP_MS = 120
+SLEEP_MS = 15000
 
 # Slack webhook URL from environment
 SLACK_WEBHOOK_URL = os.getenv("SLACK_WEBHOOK_URL")

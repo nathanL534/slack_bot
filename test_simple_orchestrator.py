@@ -11,7 +11,7 @@ import logging
 from datetime import datetime
 from app.slack import send_message
 from ticker_engine.scorer import swing_score
-from app.fmp_client import get_tech_tickers
+from app.finnhub_client import get_tech_tickers
 
 def simple_orchestrator_test(max_symbols=10):
     """Run a simplified version of the orchestrator for testing."""

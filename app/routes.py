@@ -2,7 +2,7 @@ from fastapi import APIRouter, Request, HTTPException
 from app.slack import send_message
 
 from app.alpaca_client import get_portfolio_status, get_7_day_average, buy_stock, sell_stock
-from app.fmp_client import get_tech_tickers
+from app.finnhub_client import get_tech_tickers
 
 from tasks.scheduler import run_trading_algo, check_portfolio
 import json 
