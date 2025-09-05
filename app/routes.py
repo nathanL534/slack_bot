@@ -110,3 +110,21 @@ def afternoon_trade():
 def daily_check():
     check_portfolio()
     return {"message": "✅ Daily portfolio check complete"}
+
+@router.get("/daily-orchestrator")
+def daily_orchestrator():
+    from ticker_engine.orchestrator import orchestrate_daily
+    try:
+        result = orchestrate_daily()
+        return {
+            "message": "✅ Daily orchestrator completed", 
+            "summary": {
+                "rescored": len(result.get("rescored", [])),
+                "promotions": len(result.get("promotions", [])),
+                "demotions": len(result.get("demotions", [])),
+                "watchlist_top": len(result.get("watchlist_top", []))
+            }
+        }
+    except Exception as e:
+        send_message("#notifier", f"❌ Daily orchestrator failed: {str(e)}")
+        return {"error": f"Daily orchestrator failed: {str(e)}"}
