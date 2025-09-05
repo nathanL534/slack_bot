@@ -24,14 +24,13 @@ from ticker_engine.scorer import swing_score
 from ticker_engine.ticker import Ticker
 
 # Configuration constants
-ADD_THRESHOLD = 0.67
-DROP_THRESHOLD = 0.60
+ADD_THRESHOLD = 0.57
+DROP_THRESHOLD = 0.50
+# ADD_THRESHOLD = 0.67
+# DROP_THRESHOLD = 0.60
 QUEUE_MAX = 50
 TOP_N = 12
 SLEEP_MS = 15000
-
-# Slack webhook URL from environment
-SLACK_WEBHOOK_URL = os.getenv("SLACK_WEBHOOK_URL")
 
 logger = logging.getLogger(__name__)
 
@@ -277,18 +276,16 @@ def build_priority_queue(watchlist: List[Dict], tech_universe: List[str]) -> Lis
 def post_slack_digest(promotions: List[Tuple[str, float]], 
                      demotions: List[Tuple[str, float]], 
                      watchlist_top: List[Tuple[str, float]]) -> None:
-    """Post daily digest to Slack webhook.
+    """Post daily digest to Slack using bot token.
     
     Args:
         promotions: List of (symbol, score) tuples for new additions
         demotions: List of (symbol, score) tuples for dropped symbols  
         watchlist_top: List of (symbol, score) tuples for top performers
     """
-    if not SLACK_WEBHOOK_URL:
-        logger.info("SLACK_WEBHOOK_URL not set, skipping Slack post")
-        return
-        
     try:
+        from app.slack import send_message
+        
         # Format top 3 scores
         top_3 = watchlist_top[:3]
         if len(top_3) == 0:
@@ -314,10 +311,10 @@ def post_slack_digest(promotions: List[Tuple[str, float]],
         
         message_parts.append(f"\n_Processed {len(watchlist_top)} watchlist symbols_")
         
-        payload = {"text": "\n".join(message_parts)}
+        message_text = "\n".join(message_parts)
         
-        response = requests.post(SLACK_WEBHOOK_URL, json=payload, timeout=10)
-        response.raise_for_status()
+        # Send to #notifier channel
+        send_message(channel="#notifier", text=message_text)
         
         logger.info("Posted daily digest to Slack")
         
