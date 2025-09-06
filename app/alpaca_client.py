@@ -39,7 +39,6 @@ def get_portfolio_status():
             "portfolio_value": account.portfolio_value,
             "buying_power": account.buying_power,
             "status": account.status
-
         },
         "positions": [
             {
@@ -47,7 +46,8 @@ def get_portfolio_status():
                 "qty": p.qty,
                 "market_value": p.market_value,
                 "unrealized_pl": p.unrealized_pl,
-                "current_price": p.current_price
+                "current_price": p.current_price,
+                "unrealized_plpc": p.unrealized_plpc
             } for p in positions
         ]
     }

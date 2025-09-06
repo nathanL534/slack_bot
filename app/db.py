@@ -67,3 +67,13 @@ def log_score(symbol: str, score: float) -> None:
         logging.exception("Failed to log score to Supabase: %s", e)
         raise
 
+
+
+def get_latest_score(symbol):
+    row = supabase.table("scores") \
+                  .select("score") \
+                  .eq("symbol", symbol) \
+                  .order("calculated_at", desc=True) \
+                  .limit(1) \
+                  .execute()
+    return row.data[0]["score"] if row.data else None

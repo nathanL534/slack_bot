@@ -128,3 +128,62 @@ def daily_orchestrator():
     except Exception as e:
         send_message("#notifier", f"❌ Daily orchestrator failed: {str(e)}")
         return {"error": f"Daily orchestrator failed: {str(e)}"}
+    
+    
+@router.get("/trade")
+def trade():
+    """
+    Run the complete trading engine: buy logic + sell logic.
+    
+    This endpoint triggers both buy opportunity checks and sell signal checks,
+    executing trades automatically based on the configured rules.
+    """
+    try:
+        from ticker_engine.trading.trading_engine import run_trading_engine
+        
+        # Run the complete trading engine
+        result = run_trading_engine()
+        
+        # Format response with summary
+        summary = {
+            "buy_orders_executed": len(result.get("buy_orders", [])),
+            "sell_actions_completed": len(result.get("sell_actions", [])),
+            "errors_encountered": len(result.get("errors", [])),
+            "duration_seconds": result.get("duration_seconds", 0),
+            "start_time": result.get("start_time"),
+            "end_time": result.get("end_time")
+        }
+        
+        # Include details of buy orders if any were executed
+        buy_orders_detail = []
+        for order in result.get("buy_orders", []):
+            buy_orders_detail.append({
+                "symbol": order["symbol"],
+                "qty": order["qty"],
+                "entry_price": order["entry_price"],
+                "stop_price": order["stop_price"],
+                "target_price": order["target_price"],
+                "notional": order["notional"],
+                "reason": order["reason"]
+            })
+        
+        response = {
+            "message": "✅ Trading engine completed",
+            "summary": summary,
+            "buy_orders": buy_orders_detail
+        }
+        
+        # Include errors if any occurred
+        if result.get("errors"):
+            response["errors"] = result["errors"]
+        
+        return response
+        
+    except Exception as e:
+        error_msg = f"❌ Trading engine failed: {str(e)}"
+        send_message("#notifier", error_msg)
+        return {
+            "error": error_msg,
+            "message": "Trading engine encountered an error"
+        }
+    
