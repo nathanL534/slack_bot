@@ -1,0 +1,41 @@
+name: Automated Trading Engine
+
+on:
+  schedule:
+    # Run Monday-Friday at 10:00 AM CST (16:00 UTC during standard time, 15:00 UTC during daylight time)
+    # Using 15:00 UTC to handle CST/CDT automatically (GitHub Actions uses UTC)
+    - cron: '0 15 * * 1-5'  # 10:00 AM CST Monday-Friday
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  automated_trading:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Automated Trading Engine
+        run: |
+          echo "🚀 Starting automated trading engine at $(date)"
+          
+          # Call the /trade endpoint which runs both buy and sell logic
+          response=$(curl -s -w "\n%{http_code}" -X GET https://slack-bot-xg1w.onrender.com/trade)
+          
+          # Extract HTTP status code and response body
+          http_code=$(echo "$response" | tail -n1)
+          response_body=$(echo "$response" | head -n -1)
+          
+          echo "📊 HTTP Status: $http_code"
+          echo "📋 Response: $response_body"
+          
+          # Check if the request was successful
+          if [ "$http_code" = "200" ]; then
+            echo "✅ Trading engine completed successfully"
+          else
+            echo "❌ Trading engine failed with status $http_code"
+            exit 1
+          fi
+      
+      - name: Log Trading Session
+        if: always()
+        run: |
+          echo "📅 Trading session completed at $(date)"
+          echo "🌍 UTC Time: $(date -u)"
+          echo "🇺🇸 CST Time (estimated): $(TZ='America/Chicago' date)"
