@@ -13,6 +13,7 @@ Sizing: Risk 0.75% equity, stop at entry - 1.5*ATR14 (or -8%), cap $20k
 
 import os
 import logging
+import time
 from datetime import datetime, timezone, timedelta
 from typing import List, Dict, Optional, Tuple, Any
 import math
@@ -29,13 +30,14 @@ logger = logging.getLogger(__name__)
 MAX_CONCURRENT_POSITIONS = 10
 SCORE_THRESHOLD = 0.70
 STABILITY_STREAK_DAYS = 2
-FRESHNESS_MINUTES = 30
+FRESHNESS_MINUTES = 1440  # 24 hours (was 30 minutes - too strict)
 COOLDOWN_DAYS = 3
 RISK_PER_TRADE_PCT = 0.75  # 0.75% of equity
 STOP_LOSS_ATR_MULTIPLIER = 1.5
 FALLBACK_STOP_LOSS_PCT = 8.0  # 8% if ATR unavailable
 MAX_NOTIONAL = 20000  # $20k max position size
 TARGET_PROFIT_PCT = 10.0  # 10% profit target
+SLEEP_MS = 15000  # 15 seconds between API calls (same as orchestrator)
 
 
 def is_market_open_check() -> bool:
@@ -228,6 +230,10 @@ def execute_buy_order(symbol: str, portfolio_value: float) -> Optional[Dict[str,
             logger.error(f"Failed to get current price for {symbol}")
             return None
         
+        # Rate limiting after API call
+        if SLEEP_MS > 0:
+            time.sleep(SLEEP_MS / 1000.0)
+        
         # Calculate stop price
         stop_price = calculate_atr_stop(symbol, entry_price)
         
@@ -315,7 +321,7 @@ def check_buy_opportunities() -> List[Dict[str, Any]]:
         
         logger.info(f"Checking {len(watchlist)} watchlist entries for buy opportunities")
         
-        for entry in watchlist:
+        for i, entry in enumerate(watchlist):
             symbol = entry["symbol"]
             
             # Check buy conditions
@@ -347,6 +353,14 @@ def check_buy_opportunities() -> List[Dict[str, Any]]:
                     
             else:
                 logger.debug(f"❌ {symbol}: {reason}")
+            
+            # Progress logging every 10 symbols
+            if (i + 1) % 10 == 0:
+                logger.info(f"Processed {i + 1}/{len(watchlist)} watchlist entries...")
+            
+            # Progress logging every 10 symbols
+            if (i + 1) % 10 == 0:
+                logger.info(f"Processed {i + 1}/{len(watchlist)} watchlist entries...")
     
     except Exception as e:
         logger.error(f"Error in check_buy_opportunities: {e}")

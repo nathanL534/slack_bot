@@ -69,23 +69,137 @@ def run_trading_engine() -> Dict[str, Any]:
     results["end_time"] = end_time.isoformat()
     results["duration_seconds"] = duration
     
-    # Send summary notification
-    summary_msg = (
-        f"📊 *Trading Engine Complete*\n"
-        f"🟢 Buy orders: {len(results['buy_orders'])}\n"
-        f"🔴 Sell actions: executed\n"
-        f"⚠️ Errors: {len(results['errors'])}\n"
-        f"⏱️ Duration: {duration:.1f}s"
-    )
+    # Generate detailed diagnostic message
+    detailed_summary = generate_detailed_summary(results, duration)
     
-    if results["errors"]:
-        summary_msg += f"\n❌ Errors: {', '.join(results['errors'])}"
-    
-    send_message("#notifier", summary_msg)
+    # Send detailed notification
+    send_message("#notifier", detailed_summary)
     
     logger.info(f"Trading engine complete in {duration:.1f}s")
     
     return results
+
+
+def generate_detailed_summary(results: Dict[str, Any], duration: float) -> str:
+    """Generate a detailed summary with diagnostics for why no trades occurred."""
+    
+    summary_lines = [
+        "📊 *Trading Engine Complete*",
+        f"⏱️ Duration: {duration:.1f}s"
+    ]
+    
+    # Buy orders summary
+    buy_count = len(results.get('buy_orders', []))
+    summary_lines.append(f"🟢 Buy orders executed: {buy_count}")
+    
+    if buy_count > 0:
+        for order in results['buy_orders']:
+            summary_lines.append(f"  └─ {order['symbol']}: {order['qty']} @ ${order['entry_price']:.2f}")
+    else:
+        # Add diagnostic info for why no buys occurred
+        try:
+            from ticker_engine.trading.buy_logic import get_watchlist_entry, is_market_open_check, get_current_positions
+            from app import db
+            
+            # Check market status
+            market_open = is_market_open_check()
+            summary_lines.append(f"📈 Market Status: {'OPEN' if market_open else 'CLOSED'}")
+            
+            if not market_open:
+                summary_lines.append("  └─ ❌ Primary reason: Market closed, no buys possible")
+            else:
+                # Market is open, check other reasons
+                current_positions = get_current_positions()
+                summary_lines.append(f"💼 Current Positions: {len(current_positions)}")
+                
+                # Check watchlist status
+                if db.is_configured():
+                    result = db.supabase.table("watchlist").select("*").execute()
+                    watchlist = result.data or []
+                    
+                    summary_lines.append(f"📋 Watchlist Entries: {len(watchlist)}")
+                    
+                    if len(watchlist) == 0:
+                        summary_lines.append("  └─ ❌ No symbols in watchlist to buy")
+                    else:
+                        # Analyze top candidates
+                        high_scoring = [w for w in watchlist if float(w.get('last_score', 0)) >= 0.70]
+                        summary_lines.append(f"🎯 High Scoring (≥0.70): {len(high_scoring)} symbols")
+                        
+                        if len(high_scoring) == 0:
+                            summary_lines.append("  └─ ❌ No symbols meet 0.70 score threshold")
+                        else:
+                            # Check freshness and other criteria
+                            fresh_count = 0
+                            stale_count = 0
+                            from datetime import datetime, timezone, timedelta
+                            
+                            for entry in high_scoring[:5]:  # Check top 5
+                                symbol = entry['symbol']
+                                score = entry.get('last_score', 0)
+                                last_updated = entry.get('last_rescored_at')
+                                
+                                if last_updated:
+                                    try:
+                                        updated_time = datetime.fromisoformat(last_updated.replace('Z', '+00:00'))
+                                        if updated_time.tzinfo is None:
+                                            updated_time = updated_time.replace(tzinfo=timezone.utc)
+                                        minutes_old = (datetime.now(timezone.utc) - updated_time).total_seconds() / 60
+                                        
+                                        if minutes_old <= 30:
+                                            fresh_count += 1
+                                        else:
+                                            stale_count += 1
+                                            
+                                    except:
+                                        stale_count += 1
+                            
+                            summary_lines.append(f"🕒 Fresh Scores (<30min): {fresh_count}")
+                            if stale_count > 0:
+                                summary_lines.append(f"⏰ Stale Scores (>30min): {stale_count}")
+                            
+                            if fresh_count == 0:
+                                summary_lines.append("  └─ ❌ All high-scoring symbols have stale scores")
+                            else:
+                                # Show top candidates that failed other checks
+                                summary_lines.append("🔍 Top Candidates Analysis:")
+                                for entry in high_scoring[:3]:
+                                    symbol = entry['symbol']
+                                    score = float(entry.get('last_score', 0))
+                                    
+                                    # Quick check why this symbol didn't get bought
+                                    already_holding = symbol in current_positions
+                                    if already_holding:
+                                        reason = "already holding"
+                                    else:
+                                        # Could be streak, cooldown, or other factors
+                                        streak = entry.get('streak_days', 0)
+                                        if streak < 2:
+                                            reason = f"streak only {streak}d"
+                                        else:
+                                            reason = "other criteria failed"
+                                    
+                                    summary_lines.append(f"  └─ {symbol}: {score:.3f} - {reason}")
+                else:
+                    summary_lines.append("  └─ ❌ Database not configured")
+                    
+        except Exception as e:
+            summary_lines.append(f"  └─ ❌ Diagnostic error: {str(e)[:50]}")
+    
+    # Sell actions summary  
+    sell_count = len(results.get('sell_actions', []))
+    summary_lines.append(f"🔴 Sell actions: {sell_count if sell_count > 0 else 'executed'}")
+    
+    # Errors
+    error_count = len(results.get('errors', []))
+    if error_count > 0:
+        summary_lines.append(f"⚠️ Errors: {error_count}")
+        for error in results['errors']:
+            summary_lines.append(f"  └─ {error}")
+    else:
+        summary_lines.append("✅ No errors")
+    
+    return "\n".join(summary_lines)
 
 
 if __name__ == "__main__":
