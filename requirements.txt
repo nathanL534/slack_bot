@@ -28,7 +28,7 @@ uvicorn
 fastapi
 httpx
 slack_sdk
-alpaca-trade-api
+alpaca-trade-api==3.2.0
 supabase
 pydantic
 
