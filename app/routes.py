@@ -41,7 +41,9 @@ async def check_weekly_avg(ticker: str = "AAPL"):
 @router.get("/update_portfolio_status")
 async def update_portfolio_status():
     try:
+        print("DEBUG: Starting get_portfolio_status")
         status = get_portfolio_status()
+        print(f"DEBUG: Got status: {status}")
         account = status["account"]
 
         message = (
@@ -55,7 +57,11 @@ async def update_portfolio_status():
         send_message("#paper-trade-tracker", message)
         return {"message": "Portfolio status sent to Slack", "data": status}
     except Exception as e:
-        error_msg = f"❌ Error fetching portfolio status: {str(e)}"
+        import traceback
+        print(f"DEBUG: Exception type: {type(e).__name__}")
+        print(f"DEBUG: Exception message: {str(e)}")
+        print(f"DEBUG: Full traceback:\n{traceback.format_exc()}")
+        error_msg = f"❌ Error fetching portfolio status: {type(e).__name__}: {str(e)}"
         send_message("#notifier", error_msg)
         raise HTTPException(status_code=500, detail=error_msg)
     
