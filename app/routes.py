@@ -138,12 +138,6 @@ def daily_orchestrator():
     
 @router.get("/trade")
 def trade():
-    """
-    Run the complete trading engine: buy logic + sell logic.
-    
-    This endpoint triggers both buy opportunity checks and sell signal checks,
-    executing trades automatically based on the configured rules.
-    """
     try:
         from ticker_engine.trading.trading_engine import run_trading_engine
         

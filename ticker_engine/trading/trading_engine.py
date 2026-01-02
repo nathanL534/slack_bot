@@ -1,9 +1,3 @@
-"""
-Trading engine entry point that coordinates buy and sell logic.
-
-This module provides the main entry points for automated trading decisions.
-"""
-
 import logging
 from typing import List, Dict, Any
 from datetime import datetime

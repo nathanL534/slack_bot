@@ -98,20 +98,9 @@ def sell_stock(symbol: str, quantity = 1):
     
     
 def get_bars(symbol: str, timeframe: str = "1Day", limit: int = 60):
-    """
-    Wrapper to fetch historical bar data for a symbol from Alpaca.
-
-    Args:
-        symbol (str): Ticker symbol
-        timeframe (str): "1Min", "5Min", "15Min", "1Hour", "1Day", etc.
-        limit (int): Number of bars to fetch (max 1000)
-
-    Returns:
-        List of bar dicts
-    """
     tf_map = {
         "1Min": TimeFrame.Minute,
-        "5Min": TimeFrame(5, "minute"),   # ✅ CORRECT
+        "5Min": TimeFrame(5, "minute"),
         "15Min": TimeFrame(15, "minute"),
         "1Hour": TimeFrame.Hour,
         "1Day": TimeFrame.Day
@@ -123,31 +112,3 @@ def get_bars(symbol: str, timeframe: str = "1Day", limit: int = 60):
 
     bars = alpaca_data.get_bars(symbol, tf, limit=limit)
     return [bar._raw for bar in bars]
-if __name__ == "__main__":
-    print("hi")
-    bars = alpaca_data.get_bars("AAPL", TimeFrame.Day, limit=5 )
-    alpaca_data = REST(
-    os.getenv("APCA_API_KEY_ID"),
-    os.getenv("APCA_API_SECRET_KEY"),
-    base_url=os.getenv("APCA_API_DATA_URL")
-    )
-    import os
-    from alpaca_trade_api.rest import REST
-    from dotenv import load_dotenv
-
-    load_dotenv()
-
-    print("✅ Keys loaded:", os.getenv("APCA_API_KEY_ID")[:5])
-
-    try:
-        bars = alpaca.get_bars("AAPL", TimeFrame.Day, limit=60, feed="iex")  # or try feed="sip"
-
-        print(f"✅ Got {len(bars)} bars")
-        for bar in bars:
-            print(bar)
-    except Exception as e:
-        print("❌ Error:", e)
-
-
-    for b in bars:
-        print(b)

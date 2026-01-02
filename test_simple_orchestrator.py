@@ -1,10 +1,4 @@
 #!/usr/bin/env python3
-"""
-Simplified orchestrator test that works without database tables.
-
-This version demonstrates the core functionality and posts to Slack
-without requiring Supabase schema setup.
-"""
 
 import time
 import logging
@@ -14,8 +8,6 @@ from ticker_engine.scorer import swing_score
 from app.finnhub_client import get_tech_tickers
 
 def simple_orchestrator_test(max_symbols=10):
-    """Run a simplified version of the orchestrator for testing."""
-    
     print("🚀 Starting simplified orchestrator test...")
     
     # Send start message to Slack

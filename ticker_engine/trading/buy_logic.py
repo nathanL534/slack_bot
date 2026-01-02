@@ -1,16 +1,3 @@
-"""
-Buy logic implementation with comprehensive checks and position sizing.
-
-Must-pass checks (in order):
-1. Market/capacity: Market open, not already holding, under max positions
-2. Score gate: watchlist.score >= 0.70
-3. Stability: streak >= 2 OR last 2 scores >= 0.70
-4. Freshness: latest score <= 30 min ago
-5. Cooldown: last sell >= 3 days ago
-
-Sizing: Risk 0.75% equity, stop at entry - 1.5*ATR14 (or -8%), cap $20k
-"""
-
 import os
 import logging
 import time
@@ -353,10 +340,6 @@ def check_buy_opportunities() -> List[Dict[str, Any]]:
                     
             else:
                 logger.debug(f"❌ {symbol}: {reason}")
-            
-            # Progress logging every 10 symbols
-            if (i + 1) % 10 == 0:
-                logger.info(f"Processed {i + 1}/{len(watchlist)} watchlist entries...")
             
             # Progress logging every 10 symbols
             if (i + 1) % 10 == 0:

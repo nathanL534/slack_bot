@@ -1,6 +1,3 @@
-
-
-import random 
 from ticker_engine.ticker import Ticker
 from ticker_engine.factors import (
     liquidity_score,
@@ -11,11 +8,6 @@ from ticker_engine.factors import (
     rsi_score,
     get_factor_data
 )
-
-def dummy_score(symbol):
-    return round(random.uniform(0,100), 2)
-
-
 
 def composite_score(symbol: Ticker):
     #TODO

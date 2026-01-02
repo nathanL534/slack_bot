@@ -1,14 +1,3 @@
-"""
-Daily orchestrator that coordinates watchlist → priority queue → rescoring workflow.
-
-This module handles the full daily flow:
-1. Load watchlist from Supabase 
-2. Build priority queue with watchlist + tech universe
-3. Rescore all symbols with hysteresis logic
-4. Update watchlist and insert scores to database
-5. Post Slack digest with promotions/demotions and top scores
-"""
-
 import os
 import time
 import logging

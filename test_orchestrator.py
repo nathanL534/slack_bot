@@ -1,10 +1,4 @@
 #!/usr/bin/env python3
-"""
-Test script for the daily orchestrator.
-
-This script demonstrates how to run the orchestrator and shows what it would do
-without actually modifying the database (dry-run mode).
-"""
 
 import logging
 from ticker_engine.orchestrator import (
@@ -18,7 +12,6 @@ from ticker_engine.orchestrator import (
 )
 
 def test_orchestrator_components():
-    """Test individual orchestrator components."""
     print("🧪 Testing orchestrator components...")
     
     # Test loading data
@@ -49,7 +42,6 @@ def test_orchestrator_components():
 
 
 def dry_run_orchestrator():
-    """Run a dry version of the orchestrator (read-only)."""
     print("\n🔍 Dry-run orchestrator (read-only)...")
     
     try:
@@ -73,7 +65,6 @@ def dry_run_orchestrator():
 
 
 def main():
-    """Main test function."""
     logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
     
     print("🚀 Orchestrator Test Suite")

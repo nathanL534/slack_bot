@@ -14,13 +14,6 @@ from app.db import get_latest_score
 
 
 def check_exits():
-    """
-    Decide which open positions should be sold.
-    Input: list of positions (from Alpaca client).
-    Output: list of exit actions [{symbol, qty, reason}, ...].
-    """
-    
-    
     portfolio: dict = get_portfolio_status()
     positions = portfolio["positions"]
     

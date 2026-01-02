@@ -1,9 +1,4 @@
 #!/usr/bin/env python3
-"""
-Test script for buy logic functionality.
-
-Usage: python3 test_buy_logic.py
-"""
 
 import sys
 import os
@@ -19,7 +14,6 @@ logger = logging.getLogger(__name__)
 
 
 def test_market_status():
-    """Test market open/close detection."""
     print("🕐 Market Status Check:")
     is_open = is_market_open()
     print(f"  Market is {'OPEN' if is_open else 'CLOSED'}")
@@ -27,7 +21,6 @@ def test_market_status():
 
 
 def test_individual_symbol(symbol: str):
-    """Test buy conditions for a specific symbol."""
     print(f"\n📊 Checking {symbol}:")
     
     can_buy, reason = check_buy_conditions(symbol)
@@ -38,7 +31,6 @@ def test_individual_symbol(symbol: str):
 
 
 def test_buy_opportunities():
-    """Test the full buy opportunities check."""
     print("\n🔍 Checking All Buy Opportunities:")
     
     try:
